@@ -9,10 +9,8 @@
 typedef struct{
 	int id;
 	char content; //wall = 219 path = 0
-	char top_cell_content;
-	char right_cell_content;
-	char left_cell_content;
-	char bottom_cell_content;
+	int column;
+	int line;
 } cell;
 
 #endif
