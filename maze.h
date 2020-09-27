@@ -48,11 +48,9 @@ int is_opening_possible(int opening, int direction);
 /* Get all the id left in the maze and place it in a table
  * 
  */
-int** list_available_cells_ids(cell** maze,int** ids_left);
+int* list_ids_left(int* ids,int* sum_id);
 
-int** pick_random_id_in_ids_left();
-
-int count_ids(cell** maze);
+int* count_ids(cell** maze);
 #endif
 
 

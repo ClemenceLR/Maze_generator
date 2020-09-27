@@ -93,35 +93,61 @@ void create_maze_path(cell** maze){
 	int id_for_opening;
 	int column;
 	int line;
-	int** ids_left;
-	int size_of_ids_left = count_ids(maze);
+	int* ids_left;
+	int* ids;
+	int sum_id =0;
+	int* p_sum_id = &sum_id;
 	
 	do{
 		direction = random_int(4); //0 : top : 1 right : 2 bottom 3 : left
-		printf("%d\n",size_of_ids_left);
+		ids = count_ids(maze);
+		ids_left = list_ids_left(ids,p_sum_id); // list of all the ids available
+	    id_for_opening = random_int(sum_id);
+	    printf("Id for opening %d\n",id_for_opening);
+	    //LISTER TOUTES LES CASES DU GROUPE CHOISI
+	    //LISTER TOUTES LES CASES CASES AUTOUR DU GROUPE CHOISI
+	    //CHOISIR UNE CASE ALEATOIRE DANS LA LISTE DES CASES AUTOUR DU GROUPE
+	    //CHANGER LES ID DE LA CASE CHOISIE + LE # + TOUTES LES CASES DU MEME GROUPE QUE LA CASE CHOISIE
+		//is_opening_possible(id_opening,direction); //VÉRIFIER SI ON A LE DROIT OU PAS
 		flag =1;
-		//RETOUR Dune liste de tous les id dispo
-		//VÉRIFIER SI ON A LE DROIT OU PAS
+
 		//OUVRIR UN MUR OU RECOMMENCER
-		//VERIFIER LES ID DES CASES -> SI TOUTES LE MÊME ID FLAG = 0
+		//VERIFIER LES ID DES CASES -> SI TOUTES LE MÊME ID FLAG = 1
 		
 	}while(flag == 0);
 }
-/*
-int** list_available_cells_ids(maze,ids_left){
-	int line;
-	int column;
+
+int* list_ids_left(int* ids,int* p_sum_id){
+	*p_sum_id =0;
+	int cpt;
+	int cpt2 =0;
 	
-	for(column=0;column<COLUMN_LENGTH; column++){
-		for(line=0;line<LINE_LENGTH; line++){
-			
-			printf("%c",maze[column][line].content);
+	for(cpt = 0; cpt<44; cpt++){
+		if(ids[cpt]!=0){
+			*p_sum_id +=1;
 		}
-		printf("\n");
 	}
+	
+	int* ids_left = (int*)calloc(*p_sum_id,sizeof(int));
+
+	for(cpt = 0; cpt<44; cpt++){
+		if(ids[cpt]!=0){
+			ids_left[cpt2] = cpt;
+			cpt2++;
+		}
+	}
+	
+	free(ids);
+	/* Keep for debug
+	for(int i=0;i<sum_id;i++){
+		printf("%d",ids_left[i]);
+	}
+	printf("\n");
+	*/
+	return ids_left;
 }
-*/
-int count_ids(cell** maze){
+
+int* count_ids(cell** maze){		
 	int column;
 	int line;
 	int cpt;
@@ -135,13 +161,8 @@ int count_ids(cell** maze){
 			}
 		}
 	}
-	
-	for(cpt = 0; cpt<44; cpt++){
-		if(ids[cpt]!=0){
-			sum_id +=1;
-		}
-	}
-	return sum_id;
+		
+	return ids;
 	/* Keep for debug
 	for(int i=0;i<44;i++){
 		printf("%d",ids[i]);
@@ -150,10 +171,6 @@ int count_ids(cell** maze){
 	return 1;
 	*/
 	
-}
-
-int** pick_random_id_in_ids_left(){
-		
 }
 
 int is_opening_possible(int opening, int direction){
