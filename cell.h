@@ -11,6 +11,8 @@ typedef struct{
 	char content; //wall = 219 path = 0
 	int column;
 	int line;
+	int checked;
 } cell;
+
 
 #endif

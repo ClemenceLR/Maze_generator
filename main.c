@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "maze.h"
 #include "cell.h"
+#include "maze_allocation_func.h"
+#include "maze_generation.h"
 
 /* Main of the programm : manage the game system
  * */
