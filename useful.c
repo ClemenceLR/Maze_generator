@@ -28,20 +28,23 @@ int int_table_size(int* int_table){
 			cpt+=1;
 			parcourir_cells = int_table[cpt];
 	}
+	return cpt;
 }
 
-int check_if_already_registered(cell to_check, cell* group_saved){
+int check_if_already_existing(int id_to_check,int* ids_left){
 	int index;
-	int size = cell_table_size(group_saved);
-	cell current_cell;
+	int size = int_table_size(ids_left);
+	//printf("Size table id : %d\n", size);
+	int current_cell;
+
 	for(index = 0 ; index< size; index++){
-		current_cell = group_saved[index];
-		if(current_cell.column == to_check.column && current_cell.line == to_check.line){
-			return 0;
+		if(ids_left[index] == id_to_check){
+			//printf("Déjà vu %d \n",ids_left[index]);
+			return 1;
 		}
 	}
 
-	return 1;
+	return 0;
 
 
 }

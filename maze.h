@@ -9,6 +9,9 @@ void display_maze(cell** maze);
 
 void display_cell_table(cell* cell_table);
 
+void display_char_maze(cell** maze);
+
+
 #endif
 
 

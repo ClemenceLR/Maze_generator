@@ -40,7 +40,7 @@ void fill_maze(cell** maze){
 	int column;
 	for(column=0;column<COLUMN_LENGTH; column++){
 		for(line=0;line<LINE_LENGTH; line++){
-			maze[column][line].content = '#';
+			maze[column][line].content = 'X';
 			maze[column][line].line = column; //TODO Change
 			maze[column][line].column = line;
 		}

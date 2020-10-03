@@ -25,131 +25,89 @@ cell** create_maze_area(cell** maze){
 
 void create_maze_path(cell** maze){
 	int flag = 0;
-	int direction;
 	int id_for_opening;
 	int cpt;
 	int column;
 	int line;
-	int* ids_left;
-	int* ids;
-	int sum_id =0;
-	int* p_sum_id = &sum_id;
-	cell* cell_group;
-	cell* neighbour_cells;
+	int size = 0;
+	int ids_left[44];
+	cell cell_picked;
+	cell cell_group[44];
+	cell* cleaned_neighbours;
+	cell available_for_opening[44];
 	/*Debug var*/
 	cell parcourir_cells;
 
 	do{	
 		cpt =0;
-		direction = random_int(4); //0 : top : 1 right : 2 bottom 3 : left
-		ids = count_ids(maze);
-		ids_left = list_ids_left(ids,p_sum_id); // list of all the ids available
-	    id_for_opening = random_int(sum_id);
+		list_ids_left(maze,ids_left); // list of all the ids available
+		printf("Table size of ids left %d\n" , int_table_size(ids_left));
+	    id_for_opening = ids_left[random_int(int_table_size(ids_left))];
+		size = int_table_size(ids_left);
+		printf("ID FOR OP %d", id_for_opening);
 		if(id_for_opening == 0){
 			id_for_opening =1;
 		}
+		//id_for_opening = 44;
 	    //printf("Id for opening %d\n",id_for_opening);
-		cell_group = list_cells_of_a_group(maze,id_for_opening); //List all the cells of the chosen group	
+		list_cells_of_a_group(maze,id_for_opening,cell_group); //List all the cells of the chosen group	
 	
 		/*CELL_GROUP EST DEFINI ICI*/
 		// Debug cells group
 		//int length = cell_table_size(cell_group);
 		//printf("Size of table %d ", length);
 		
-		neighbour_cells = list_available_surrounding_cells(maze, cell_group);
+		list_available_surrounding_cells(maze, cell_group,available_for_opening);
+		cell_picked = available_for_opening[random_int(cell_table_size(available_for_opening))];
+		printf("Cell picked %d\n",cell_picked.id);
+		break_wall(maze, id_for_opening, cell_picked.id);
 		// Debug cells group
 		//int length = cell_table_size(neighbour_cells);
 		//printf("Size of table %d \n", length);
 		printf("Over\n");
-	    //LISTER TOUTES LES CASES CASES AUTOUR DU GROUPE CHOISI
 	    //CHOISIR UNE CASE ALEATOIRE DANS LA LISTE DES CASES AUTOUR DU GROUPE
 	    //CHANGER LES ID DE LA CASE CHOISIE + LE # + TOUTES LES CASES DU MEME GROUPE QUE LA CASE CHOISIE
 		//is_opening_possible(id_opening,direction); //VÉRIFIER SI ON A LE DROIT OU PAS
-		flag =1;
+		flag +=1;
 
 		//OUVRIR UN MUR OU RECOMMENCER
 		//VERIFIER LES ID DES CASES -> SI TOUTES LE MÊME ID FLAG = 1
 		
-	}while(flag == 0);
+	}while(flag < 44 && size >0);
 }
 
 
 //---------------------------------------------------------A refaire
-int* count_ids(cell** maze){		
-	int column;
-	int line;
-	int cpt;
-	int sum_id =0;
-	int* ids = (int*)calloc(44,sizeof(int)); //TODO remplacer par 1 
-	 
-	for(column=0;column<COLUMN_LENGTH; column++){
-		for(line=0;line<LINE_LENGTH; line++){ // Realloc +1
-			if(maze[column][line].id !=0){
-				ids[maze[column][line].id]+=1; 
+
+void list_ids_left(cell** maze,int* ids_left){
+	int cpt, cpt2,cpt3;
+	ids_left[0] = -1;
+	cpt3 = 0;
+
+	for(cpt = 0; cpt<COLUMN_LENGTH-2; cpt++){
+		for(cpt2 =0; cpt2<LINE_LENGTH-2; cpt2++){
+			if(maze[cpt][cpt2].id !=0 && !check_if_already_existing(maze[cpt][cpt2].id,ids_left)){
+				ids_left[cpt3] = maze[cpt][cpt2].id;
+				ids_left[cpt3+1]=-1;
+				cpt3++;
 			}
 		}
 	}
-	//TODO structure int taille_tab; int tab[taille_tab]	
-	return ids;
-	/* Keep for debug
-	for(int i=0;i<44;i++){
-		printf("%d",ids[i]);
-	}
-	printf("\n");
-	return 1;
-	*/	
 	
-}
-
-int* list_ids_left(int* ids,int* p_sum_id){
-	*p_sum_id =0;
-	int cpt;
-	int cpt2 =0;
-	
-	for(cpt = 0; cpt<44; cpt++){
-		if(ids[cpt]!=0){
-			*p_sum_id +=1;
-		}
-	}
-	
-	int* ids_left = (int*)calloc(*p_sum_id,sizeof(int));
-
-	for(cpt = 0; cpt<44; cpt++){
-		if(ids[cpt]!=0){
-			ids_left[cpt2] = cpt;
-			cpt2++;
-		}
-	}
-	
-	free(ids);
-	/* Keep for debug
-	for(int i=0;i<sum_id;i++){
-		printf("%d",ids_left[i]);
-	}
-	printf("\n");
-	*/
-	return ids_left;
-
 }
 
 //------------------------------------------------------------------------------------TODO A refaire
 
 //LISTER TOUTES LES CASES DU GROUPE CHOISI
-cell* list_cells_of_a_group(cell** maze,int id){
+void list_cells_of_a_group(cell** maze,int id, cell* cell_group){
 	int column;
 	int line;
 	int index =0;
 	cell end_cell = {-1};
 
-	cell* cell_group = (cell*)calloc(44,sizeof(cell)); //TODO remplacer par 1 
-
-	//todo allouer de l'espace pour une cellule
 	for(column=0;column<COLUMN_LENGTH; column++){
 		for(line=0;line<LINE_LENGTH; line++){ 
-			if(maze[column][line].id == id){ 
-				if(index !=0){//realloc
-
-				}
+			if(maze[column][line].id == id && maze[column][line].id != 0){ 
 				cell_group[index] = maze[column][line];
 				index+=1;
 			}
@@ -157,11 +115,9 @@ cell* list_cells_of_a_group(cell** maze,int id){
 	}
 	cell_group[index] = end_cell;
 
-	return cell_group;
 }
 
-cell* list_available_surrounding_cells(cell** maze, cell* cell_group){
-	cell available_for_opening[44];
+void list_available_surrounding_cells(cell** maze, cell* cell_group, cell* available_for_opening){
 	cell neighbours[44];
 	cell end_cell ={-1};
 
@@ -177,136 +133,61 @@ cell* list_available_surrounding_cells(cell** maze, cell* cell_group){
 	int cpt =0;
 	int check =0;
 	available_for_opening[cpt] = end_cell;
-	printf("AFO %d\n",available_for_opening[cpt].id);
+	//printf("AFO %d\n",available_for_opening[cpt].id);
 	size = cell_table_size(cell_group);
 	printf("Size : %d\n",size);
 	index_afo =0;
 	//-------------------------------------------------------------------------------------------------------------------------------------------------OK UNTIL HERE
 	for(index=0; index<size; index++){ 
 		find_cell_neighbours(maze,neighbours,cell_group[index]);
-		while(neighbours[cpt].id >0){
+		while(neighbours[cpt].id !=-1 && neighbours[cpt].id != group_id){
 			printf("Neighbour found for %d is %d\n",cell_group[index].id,neighbours[cpt].id);
-			check = check_if_already_registered(neighbours[cpt], available_for_opening);
-			if(check == 1){
-				printf("Hey %d\n", neighbours[cpt].id);
-				available_for_opening[index_afo] = neighbours[cpt];
-				index_afo +=1;
-			}
+			available_for_opening[index_afo] = neighbours[cpt];
+			index_afo +=1;
 			cpt+=1;
 		}
-		
+		cpt=0;
 	}	
-
 	available_for_opening[index_afo] = end_cell;
-	//cleaned_list  =  remove_forbidden_cells(&available_for_opening[0], group_id);
-
-	return &available_for_opening[0]; 
+	
 
 }
-
-/*
-cell* remove_forbidden_cells(cell* available_for_opening, int group_id){ 
-	cell cleaned_list[44];
-	cell end_cell = {-1};
-	int cpt =0;
-	int index;
-	int size = cell_table_size(available_for_opening);
-	for(index = 0; index < size; index++){
-		if(available_for_opening[index].id != group_id){
-			if((available_for_opening[index].column !=0) && 
-			(available_for_opening[index].column !=COLUMN_LENGTH-1) && 
-			(available_for_opening[index].line !=0) && 
-			(available_for_opening[index].line !=LINE_LENGTH-1)){
-				cleaned_list[cpt] = available_for_opening[index];
-				printf("Cleaned : %d\n" ,cleaned_list[cpt].id);
-				cpt+=1;
-			}
-		}
-
-	}
-
-	cleaned_list[cpt] = end_cell;
-	return cleaned_list;
-}*/
 
 //TODO FIND NEIGHBOURS
 void find_cell_neighbours(cell** maze, cell* neighbours,cell cell_concerned){
 	int cpt=0;
 	cell end_cell = {-1};
-	if((cell_concerned.column == 1) ||(cell_concerned.column == (LINE_LENGTH-2)) || cell_concerned.line == 1 || cell_concerned.line == (COLUMN_LENGTH-2)){ //We isulate the specific sides : first line, first column, last line, last column
-		//CORNERS DON'T WORK WHYYYYYYY ???????
-		if((cell_concerned.column == 1) && (cell_concerned.line == 1)){ 
-			printf("LINE OF 1 : %d\n", cell_concerned.line );
-			neighbours[cpt] = return_right_cell(maze, cell_concerned);
-			printf("Hello i'm neighbour right of case 1 %d\n", neighbours[cpt].id);
-			cpt+=1;
-			printf("CPT %d",cpt);
-			neighbours[cpt] = return_bottom_cell(maze, cell_concerned);
-			printf("Hello i'm neighbour bottom of case 1 %d\n", neighbours[cpt].id);
-		}else if((cell_concerned.column == 1) && (cell_concerned.line == COLUMN_LENGTH-2)){
-			printf("Yo 12\n");
-			neighbours[cpt] = return_top_cell(maze, cell_concerned);
-			cpt+=1;
-			neighbours[cpt] = return_right_cell(maze, cell_concerned);
-		}else if((cell_concerned.column == LINE_LENGTH-2) && (cell_concerned.line == 1)){
-			printf("HY 12\n");
-			neighbours[cpt] = return_left_cell(maze, cell_concerned);
-			cpt+=1;
-			neighbours[cpt] = return_bottom_cell(maze, cell_concerned);
-		}else if((cell_concerned.column == LINE_LENGTH-2) && (cell_concerned.line == COLUMN_LENGTH-2)){
-			printf("Y 12\n");
-			neighbours[cpt] = return_left_cell(maze, cell_concerned);
-			cpt+=1;
-			neighbours[cpt] = return_top_cell(maze, cell_concerned);
-		//PREVIOUS CODE ISN'T WORKING WHYYYYY ?
-		}else if(cell_concerned.column == 1){
-			printf("LINE OF 12 : %d\n", cell_concerned.line );
-			printf("Column OF 12 : %d\n", cell_concerned.column );
-			neighbours[cpt] = return_top_cell(maze,cell_concerned);
-			printf("Hello i'm neighbour top of case 12 %d\n", neighbours[cpt].id);
+	cell temp;
 
+	if(cell_concerned.column != 1){
+		temp = return_left_cell(maze,cell_concerned);
+		if(cell_concerned.id != temp.id){
+			neighbours[cpt] = temp;
 			cpt+=1;
-			neighbours[cpt] = return_right_cell(maze,cell_concerned);
-			printf("Hello i'm neighbour right of case 12 %d\n", neighbours[cpt].id);
-
-			cpt+=1;
-			neighbours[cpt] = return_bottom_cell(maze, cell_concerned);
-			printf("Hello i'm neighbour bottom of case 12 ICI %d\n", neighbours[cpt].id);
-
-
-		}else if(cell_concerned.column == LINE_LENGTH-2){
-			neighbours[cpt] = return_top_cell(maze,cell_concerned);
-			cpt+=1;
-			neighbours[cpt] = return_left_cell(maze,cell_concerned);
-			cpt+=1;
-			neighbours[cpt] = return_bottom_cell(maze, cell_concerned);
-		}else if(cell_concerned.line == 1){
-			neighbours[cpt] = return_left_cell(maze,cell_concerned);
-			cpt+=1;
-			neighbours[cpt] = return_right_cell(maze,cell_concerned);
-			cpt+=1;
-			neighbours[cpt] = return_bottom_cell(maze, cell_concerned);
-		}else {
-			neighbours[cpt] = return_left_cell(maze,cell_concerned);
-			cpt+=1;
-			neighbours[cpt] = return_right_cell(maze,cell_concerned);
-			cpt+=1;
-			neighbours[cpt] = return_top_cell(maze, cell_concerned);
 		}
-
-	}else{
-		printf("pfff\n");
-
-		neighbours[cpt] = return_top_cell(maze,cell_concerned);
-		cpt+=1;
-		neighbours[cpt] = return_right_cell(maze,cell_concerned);
-		cpt+=1;
-		neighbours[cpt] = return_bottom_cell(maze, cell_concerned);
-		cpt+=1;
-		neighbours[cpt] = return_left_cell(maze,cell_concerned);
+	}	
+	if(cell_concerned.line != 1){
+		temp = return_left_cell(maze,cell_concerned);
+		if(cell_concerned.id != temp.id){
+			neighbours[cpt] = return_top_cell(maze,cell_concerned);
+			cpt+=1;
+		}
+	}
+	if(cell_concerned.column != LINE_LENGTH-2){
+		temp = return_left_cell(maze,cell_concerned);
+		if(cell_concerned.id != temp.id){
+			neighbours[cpt] = return_right_cell(maze,cell_concerned);
+			cpt+=1;
+		}
+	}
+	if(cell_concerned.line != COLUMN_LENGTH-2){
+		temp = return_left_cell(maze,cell_concerned);
+		if(cell_concerned.id != temp.id){
+			neighbours[cpt] = return_bottom_cell(maze,cell_concerned);
+			cpt+=1;
+		}
 	}
 
-	cpt+=1;
 	neighbours[cpt]= end_cell;
 
 }
@@ -330,3 +211,58 @@ cell return_bottom_cell(cell** maze, cell find_bottom){
 	return maze[find_bottom.line+2][find_bottom.column];
 }
 //FIND WALL (double parcours en fonction de l'id)
+void break_wall(cell** maze, int id_origin, int id_target){
+	cell origin_group[44];
+	cell target_group[44];
+	cell neighbours[44];
+	int column_wall_to_open;
+	int line_wall_to_open;
+	int size_of_neighbours;
+	int size_of_target_group = 0;
+	int cpt;
+	int cpt2;
+	int found =0;
+	//parcourir toutes les cellules du groupe d'origine
+	list_cells_of_a_group(maze,id_origin, origin_group);
+	list_cells_of_a_group(maze,id_target, target_group);
+
+	size_of_target_group = cell_table_size(target_group);
+	
+	for(cpt =0; cpt<size_of_target_group; cpt++){
+		find_cell_neighbours(maze, neighbours,target_group[cpt]);
+		size_of_neighbours = cell_table_size(neighbours);
+		for(cpt2=0;cpt2<size_of_neighbours;cpt2++){
+			if(neighbours[cpt2].id == id_origin){
+				found = 1;
+				break;
+			}
+		}
+		if(found ==1){
+			break;
+		}
+	}
+	printf("target coll %d neighb col %d\n", target_group[cpt].line, neighbours[cpt2].column);
+	printf("target line %d neighb line %d\n", target_group[cpt].column,neighbours[cpt2].line);
+
+	column_wall_to_open= (target_group[cpt].column + neighbours[cpt2].column)/2;
+	printf("Wall to open coll %d\n", column_wall_to_open);
+	line_wall_to_open= (target_group[cpt].line + neighbours[cpt2].line)/2;
+	printf("Wall to open line %d\n", line_wall_to_open);
+
+	maze[line_wall_to_open][column_wall_to_open].content = ' ';
+	//maze[line_wall_to_open][column_wall_to_open].id = id_origin;
+	change_target_id(maze,target_group, id_origin);
+	display_maze(maze);
+	display_char_maze(maze);
+}
+
+void change_target_id(cell** maze,cell* target_group,int id_origin){
+	int size_of_target_group;
+	int cpt;
+
+	size_of_target_group = cell_table_size(target_group);
+	for(cpt =0; cpt<size_of_target_group; cpt++){
+			maze[target_group[cpt].line][target_group[cpt].column].id = id_origin;
+	}
+
+}
