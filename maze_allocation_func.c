@@ -7,7 +7,6 @@
 #define COLUMN_LENGTH 9
 
 cell** allocate_space_maze(cell** maze){
-	int line;
 	int column;
 	
 	maze = (cell **)calloc(COLUMN_LENGTH,sizeof(cell*));
@@ -42,8 +41,8 @@ void fill_maze(cell** maze){
 	for(column=0;column<COLUMN_LENGTH; column++){
 		for(line=0;line<LINE_LENGTH; line++){
 			maze[column][line].content = '#';
-			maze[column][line].column = column;
-			maze[column][line].line = line;
+			maze[column][line].line = column; //TODO Change
+			maze[column][line].column = line;
 		}
 	}
 }
@@ -51,7 +50,7 @@ void fill_maze(cell** maze){
 void place_holes(cell** maze){
 	int line;
 	int column;
-	int count =0;
+	int count =1;
 
 	for(column=1;column<COLUMN_LENGTH; column+=2){
 		for(line=1;line<LINE_LENGTH; line+=2){

@@ -34,7 +34,6 @@ int check_if_already_registered(cell to_check, cell* group_saved){
 	int index;
 	int size = cell_table_size(group_saved);
 	cell current_cell;
-	printf("I'm in the check size : %d\n",size);
 	for(index = 0 ; index< size; index++){
 		current_cell = group_saved[index];
 		if(current_cell.column == to_check.column && current_cell.line == to_check.line){

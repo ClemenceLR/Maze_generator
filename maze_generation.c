@@ -8,7 +8,7 @@
 
 #define LINE_LENGTH 23
 #define COLUMN_LENGTH 9
-#define MAX_NEIGHBOURS 4
+#define MAX_NEIGHBOURS 5
 
 cell** create_maze_area(cell** maze){
 	//given an adress build a table of walls
@@ -45,6 +45,9 @@ void create_maze_path(cell** maze){
 		ids = count_ids(maze);
 		ids_left = list_ids_left(ids,p_sum_id); // list of all the ids available
 	    id_for_opening = random_int(sum_id);
+		if(id_for_opening == 0){
+			id_for_opening =1;
+		}
 	    //printf("Id for opening %d\n",id_for_opening);
 		cell_group = list_cells_of_a_group(maze,id_for_opening); //List all the cells of the chosen group	
 	
@@ -159,9 +162,12 @@ cell* list_cells_of_a_group(cell** maze,int id){
 
 cell* list_available_surrounding_cells(cell** maze, cell* cell_group){
 	cell available_for_opening[44];
-	cell* cleaned_list;
-	cell neighbours[MAX_NEIGHBOURS];
+	cell neighbours[44];
+	cell end_cell ={-1};
+
 	int index;
+	int index_afo;
+	int reset;
 	int size;
 	//USED FOR DEBUG
 	//display_maze(maze);
@@ -169,79 +175,36 @@ cell* list_available_surrounding_cells(cell** maze, cell* cell_group){
 	int group_id = cell_group[0].id; 
 	printf("Group id : %d\n", group_id);
 	int cpt =0;
-	cell to_check;
-	cell end_cell ={-1};
 	int check =0;
 	available_for_opening[cpt] = end_cell;
 	printf("AFO %d\n",available_for_opening[cpt].id);
 	size = cell_table_size(cell_group);
 	printf("Size : %d\n",size);
-
+	index_afo =0;
 	//-------------------------------------------------------------------------------------------------------------------------------------------------OK UNTIL HERE
-	for(index=0; index<size; index++){ // All the cases except problematic cases
-//			if(cell_group[index].column >1 && cell_group[index].line >1 && cell_group[index].column < COLUMN_LENGTH-2 && cell_group[index].column < LINE_LENGTH-2 ){
-				//We put all the possiblity 
-				//Top
-				to_check = maze[cell_group[index].column][cell_group[index].line-2];
-						check = check_if_already_registered(to_check, available_for_opening);
-						if(check == 1){
-							printf("Hy\n");
-							available_for_opening[cpt] = to_check;
-							cpt+=1;
-							available_for_opening[cpt] = end_cell;
-						}
-						available_for_opening[cpt] = to_check;
-						cpt +=1;
-						available_for_opening[cpt] = end_cell;
-
-				//Left
-				to_check = maze[cell_group[index].column+2][cell_group[index].line];
-						check = check_if_already_registered(to_check, available_for_opening);
-						if(check == 1){
-							available_for_opening[cpt] = to_check;
-							cpt+=1;
-							available_for_opening[cpt] = end_cell;
-						}
-				available_for_opening[cpt] = to_check;
-				cpt +=1;
-				available_for_opening[cpt] = end_cell;
-
-				//Bottom
-				to_check = maze[cell_group[index].column][cell_group[index].line+2];
-						check = check_if_already_registered(to_check, available_for_opening);
-						if(check == 1){
-							available_for_opening[cpt] = to_check;
-							cpt+=1;
-							available_for_opening[cpt] = end_cell;
-						}
-				available_for_opening[cpt] = to_check;
-				cpt +=1;
-				available_for_opening[cpt] = end_cell;
-
-				//Right
-				to_check =maze[cell_group[index].column-2][cell_group[index].line];
-						check = check_if_already_registered(to_check, available_for_opening);
-						if(check == 1){
-							available_for_opening[cpt] = to_check;
-							cpt+=1;
-							available_for_opening[cpt] = end_cell;
-						}
-				available_for_opening[cpt] = to_check;
-				cpt +=1;
-				available_for_opening[cpt] = end_cell;
-				
-		//	}
+	for(index=0; index<size; index++){ 
+		find_cell_neighbours(maze,neighbours,cell_group[index]);
+		while(neighbours[cpt].id >0){
+			printf("Neighbour found for %d is %d\n",cell_group[index].id,neighbours[cpt].id);
+			check = check_if_already_registered(neighbours[cpt], available_for_opening);
+			if(check == 1){
+				printf("Hey %d\n", neighbours[cpt].id);
+				available_for_opening[index_afo] = neighbours[cpt];
+				index_afo +=1;
+			}
+			cpt+=1;
+		}
+		
 	}	
 
+	available_for_opening[index_afo] = end_cell;
+	//cleaned_list  =  remove_forbidden_cells(&available_for_opening[0], group_id);
 
-	available_for_opening[cpt] = end_cell;
-	cleaned_list  =  remove_forbidden_cells(&available_for_opening[0], group_id);
-
-	return &cleaned_list[0]; 
+	return &available_for_opening[0]; 
 
 }
 
-
+/*
 cell* remove_forbidden_cells(cell* available_for_opening, int group_id){ 
 	cell cleaned_list[44];
 	cell end_cell = {-1};
@@ -264,64 +227,76 @@ cell* remove_forbidden_cells(cell* available_for_opening, int group_id){
 
 	cleaned_list[cpt] = end_cell;
 	return cleaned_list;
-}
+}*/
 
 //TODO FIND NEIGHBOURS
 void find_cell_neighbours(cell** maze, cell* neighbours,cell cell_concerned){
 	int cpt=0;
-	if(cell_concerned.column == 1 || cell_concerned.column == COLUMN_LENGTH-2 || cell_concerned.line == 1 || cell_concerned.line == LINE_LENGTH-2){ //We isulate the specific sides : first line, first column, last line, last column
-		if(cell_concerned.column == 1 && cell_concerned.line == 1){ 
+	cell end_cell = {-1};
+	if((cell_concerned.column == 1) ||(cell_concerned.column == (LINE_LENGTH-2)) || cell_concerned.line == 1 || cell_concerned.line == (COLUMN_LENGTH-2)){ //We isulate the specific sides : first line, first column, last line, last column
+		//CORNERS DON'T WORK WHYYYYYYY ???????
+		if((cell_concerned.column == 1) && (cell_concerned.line == 1)){ 
+			printf("LINE OF 1 : %d\n", cell_concerned.line );
 			neighbours[cpt] = return_right_cell(maze, cell_concerned);
+			printf("Hello i'm neighbour right of case 1 %d\n", neighbours[cpt].id);
 			cpt+=1;
+			printf("CPT %d",cpt);
 			neighbours[cpt] = return_bottom_cell(maze, cell_concerned);
-
-		}else if(cell_concerned.column == 1 && cell_concerned.line == LINE_LENGTH-2){
+			printf("Hello i'm neighbour bottom of case 1 %d\n", neighbours[cpt].id);
+		}else if((cell_concerned.column == 1) && (cell_concerned.line == COLUMN_LENGTH-2)){
+			printf("Yo 12\n");
 			neighbours[cpt] = return_top_cell(maze, cell_concerned);
 			cpt+=1;
 			neighbours[cpt] = return_right_cell(maze, cell_concerned);
-
-		}else if(cell_concerned.column == COLUMN_LENGTH-2 && cell_concerned.line == 1){
+		}else if((cell_concerned.column == LINE_LENGTH-2) && (cell_concerned.line == 1)){
+			printf("HY 12\n");
 			neighbours[cpt] = return_left_cell(maze, cell_concerned);
 			cpt+=1;
 			neighbours[cpt] = return_bottom_cell(maze, cell_concerned);
-
-		}else if(cell_concerned.column == COLUMN_LENGTH-2 && cell_concerned.line == LINE_LENGTH-2){
+		}else if((cell_concerned.column == LINE_LENGTH-2) && (cell_concerned.line == COLUMN_LENGTH-2)){
+			printf("Y 12\n");
 			neighbours[cpt] = return_left_cell(maze, cell_concerned);
 			cpt+=1;
 			neighbours[cpt] = return_top_cell(maze, cell_concerned);
-
+		//PREVIOUS CODE ISN'T WORKING WHYYYYY ?
 		}else if(cell_concerned.column == 1){
+			printf("LINE OF 12 : %d\n", cell_concerned.line );
+			printf("Column OF 12 : %d\n", cell_concerned.column );
 			neighbours[cpt] = return_top_cell(maze,cell_concerned);
+			printf("Hello i'm neighbour top of case 12 %d\n", neighbours[cpt].id);
+
 			cpt+=1;
 			neighbours[cpt] = return_right_cell(maze,cell_concerned);
+			printf("Hello i'm neighbour right of case 12 %d\n", neighbours[cpt].id);
+
 			cpt+=1;
 			neighbours[cpt] = return_bottom_cell(maze, cell_concerned);
-			cpt+=1;
+			printf("Hello i'm neighbour bottom of case 12 ICI %d\n", neighbours[cpt].id);
 
-		}else if(cell_concerned.column == COLUMN_LENGTH-2){
+
+		}else if(cell_concerned.column == LINE_LENGTH-2){
 			neighbours[cpt] = return_top_cell(maze,cell_concerned);
 			cpt+=1;
 			neighbours[cpt] = return_left_cell(maze,cell_concerned);
 			cpt+=1;
 			neighbours[cpt] = return_bottom_cell(maze, cell_concerned);
-			cpt+=1;
 		}else if(cell_concerned.line == 1){
 			neighbours[cpt] = return_left_cell(maze,cell_concerned);
 			cpt+=1;
 			neighbours[cpt] = return_right_cell(maze,cell_concerned);
 			cpt+=1;
 			neighbours[cpt] = return_bottom_cell(maze, cell_concerned);
-			cpt+=1;
 		}else {
 			neighbours[cpt] = return_left_cell(maze,cell_concerned);
 			cpt+=1;
 			neighbours[cpt] = return_right_cell(maze,cell_concerned);
 			cpt+=1;
 			neighbours[cpt] = return_top_cell(maze, cell_concerned);
-			cpt+=1;
 		}
 
 	}else{
+		printf("pfff\n");
+
 		neighbours[cpt] = return_top_cell(maze,cell_concerned);
 		cpt+=1;
 		neighbours[cpt] = return_right_cell(maze,cell_concerned);
@@ -331,24 +306,27 @@ void find_cell_neighbours(cell** maze, cell* neighbours,cell cell_concerned){
 		neighbours[cpt] = return_left_cell(maze,cell_concerned);
 	}
 
+	cpt+=1;
+	neighbours[cpt]= end_cell;
+
 }
 
 
 cell return_left_cell(cell** maze, cell find_left){
-	return maze[find_left.column-2][find_left.line];
+	return maze[find_left.line][find_left.column-2];
 }
 
 cell return_right_cell(cell** maze, cell find_right){
-	return maze[find_right.column+2][find_right.line];
+	return maze[find_right.line][find_right.column+2];
 
 }
 
 cell return_top_cell(cell** maze, cell find_top){
-	return maze[find_top.column][find_top.line+2];
+	return maze[find_top.line-2][find_top.column];
 
 }
 
 cell return_bottom_cell(cell** maze, cell find_bottom){
-	return maze[find_bottom.column][find_bottom.line-2];
+	return maze[find_bottom.line+2][find_bottom.column];
 }
 //FIND WALL (double parcours en fonction de l'id)

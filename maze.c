@@ -14,7 +14,8 @@ void display_maze(cell** maze){
 	
 	for(column=0;column<COLUMN_LENGTH; column++){
 		for(line=0;line<LINE_LENGTH; line++){
-			printf("%c",maze[column][line].content);
+			//printf("%c",maze[column][line].content);
+			printf("%d",maze[column][line].id);
 		}
 		printf("\n");
 	}
