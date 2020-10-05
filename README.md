@@ -5,7 +5,6 @@ Launch the programm complition with make in the same directory you put the progr
 Enter ./maze_exe to launch the programm
 
 TODO : 
-- Generate the maze with the algorithm given
 - Menu for the user :
 	- Create Maze
 	- Load Maze

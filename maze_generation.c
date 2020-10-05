@@ -1,25 +1,31 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "maze.h"
+#include "display_maze.h"
 #include "cell.h"
 #include "useful.h"
 #include "maze_allocation_func.h"
 #include "maze_generation.h"
 
-#define LINE_LENGTH 23
-#define COLUMN_LENGTH 9
 #define MAX_NEIGHBOURS 5
+int LINE_LENGTH;
+int COLUMN_LENGTH;
+int NUMBER_ID;
 
-cell** create_maze_area(cell** maze){
+cell** create_maze_area(cell** maze, int line, int column){
 	//given an adress build a table of walls
-	maze = allocate_space_maze(maze); 
+	LINE_LENGTH = line;
+	COLUMN_LENGTH = column;
+	//Trouble shoot the issue of numer id moving if even/odd > why 25 /27 isn't working ????
+	NUMBER_ID = (LINE_LENGTH/2) * (COLUMN_LENGTH/2);
+	maze = allocate_space_maze(maze, LINE_LENGTH, COLUMN_LENGTH); 
+	//printf("End allocation\n");
 	fill_maze(maze);
+	//printf("End filling the maze\n");
 	place_holes(maze);
 	create_maze_path(maze);
-	display_char_maze(maze);
-	//TODO ADD ENTRY - OUT
+	//display_char_maze(maze);
 	
-	return maze; //TO CHANGE ?
+	return maze;
 }
 
 
@@ -30,14 +36,13 @@ void create_maze_path(cell** maze){
 	int column;
 	int line;
 	int size = 0;
-	int ids_left[44];
+	int ids_left[NUMBER_ID];
 	cell cell_picked;
-	cell cell_group[44];
+	cell cell_group[NUMBER_ID];
 	cell* cleaned_neighbours;
-	cell available_for_opening[44];
+	cell available_for_opening[NUMBER_ID];
 	/*Debug var*/
 	cell parcourir_cells;
-
 	do{	
 		cpt =0;
 		list_ids_left(maze,ids_left); // list of all the ids available
@@ -48,7 +53,7 @@ void create_maze_path(cell** maze){
 		if(id_for_opening == 0){
 			id_for_opening =1;
 		}
-		//id_for_opening = 44;
+		//id_for_opening = NUMBER_ID;
 	    //printf("Id for opening %d\n",id_for_opening);
 		list_cells_of_a_group(maze,id_for_opening,cell_group); //List all the cells of the chosen group	
 	
@@ -76,7 +81,6 @@ void list_ids_left(cell** maze,int* ids_left){
 	int cpt, cpt2,cpt3;
 	ids_left[0] = -1;
 	cpt3 = 0;
-
 	for(cpt = 1; cpt<COLUMN_LENGTH-1; cpt+=2){
 		for(cpt2 =1; cpt2<LINE_LENGTH-1; cpt2+=2){
 			if(maze[cpt][cpt2].id !=0 && !check_if_already_existing(maze[cpt][cpt2].id,ids_left)){
@@ -111,7 +115,7 @@ void list_cells_of_a_group(cell** maze,int id, cell* cell_group){
 }
 
 void list_available_surrounding_cells(cell** maze, cell* cell_group, cell* available_for_opening){
-	cell neighbours[44];
+	cell neighbours[NUMBER_ID];
 	cell end_cell ={-1};
 
 	int index;
@@ -203,9 +207,9 @@ cell return_bottom_cell(cell** maze, cell find_bottom){
 }
 //FIND WALL (double parcours en fonction de l'id)
 void break_wall(cell** maze, int id_origin, int id_target){
-	cell origin_group[44];
-	cell target_group[44];
-	cell neighbours[44];
+	cell origin_group[NUMBER_ID];
+	cell target_group[NUMBER_ID];
+	cell neighbours[NUMBER_ID];
 	int column_wall_to_open;
 	int line_wall_to_open;
 	int size_of_neighbours;

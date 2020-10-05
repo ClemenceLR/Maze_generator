@@ -39,7 +39,6 @@ int check_if_already_existing(int id_to_check,int* ids_left){
 
 	for(index = 0 ; index< size; index++){
 		if(ids_left[index] == id_to_check){
-			//printf("Déjà vu %d \n",ids_left[index]);
 			return 1;
 		}
 	}

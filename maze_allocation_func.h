@@ -6,7 +6,7 @@
 /* Dynamically allocates the memory space needed for the maze
  * @param maze : pointer on the maze memory space
  */
-cell** allocate_space_maze(cell** maze);
+cell** allocate_space_maze(cell** maze,int line, int column);
 
 
 /* Free the memory space allocated to the matrix

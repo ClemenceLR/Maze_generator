@@ -9,7 +9,7 @@ void maze_generator(cell** maze);
 /* Creates a table of cells of the size 9 * 23 ans stock it at the adress given
  * @param maze : pointer on the maze memory space
  */
-cell** create_maze_area(cell** maze);
+cell** create_maze_area(cell** maze, int line, int column);
 
 
 /* Create the path of the maze with the algorithm given using cell id

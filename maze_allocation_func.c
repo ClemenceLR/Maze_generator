@@ -3,11 +3,12 @@
 #include "maze_allocation_func.h"
 #include "cell.h"
 
-#define LINE_LENGTH 23
-#define COLUMN_LENGTH 9
+int LINE_LENGTH;
+int COLUMN_LENGTH;
 
-cell** allocate_space_maze(cell** maze){
-	int column;
+cell** allocate_space_maze(cell** maze, int line, int column){
+	COLUMN_LENGTH = column;
+	LINE_LENGTH = line;
 	
 	maze = (cell **)calloc(COLUMN_LENGTH,sizeof(cell*));
 	if(maze == NULL){
@@ -45,6 +46,9 @@ void fill_maze(cell** maze){
 			maze[column][line].column = line;
 		}
 	}
+
+	maze[1][0].content = 'o';
+	maze[COLUMN_LENGTH-2][LINE_LENGTH-1].content = ' ';
 }
 
 void place_holes(cell** maze){
