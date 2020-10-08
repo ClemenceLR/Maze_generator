@@ -5,6 +5,7 @@ Launch the programm complition with make in the same directory you put the progr
 Enter ./maze_exe to launch the programm
 
 TODO : 
+- Tirage de voisins + aléatoire
 - Menu for the user :
 	- Create Maze
 	- Load Maze
