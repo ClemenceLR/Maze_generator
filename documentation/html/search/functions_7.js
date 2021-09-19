@@ -1,0 +1,8 @@
+var searchData=
+[
+  ['list_5favailable_5fsurrounding_5fcells',['list_available_surrounding_cells',['../maze__generation_8c.html#a33951bb52b6eb401799b7eeec9e18326',1,'list_available_surrounding_cells(cell **maze, cell *cell_group, cell *available_for_opening):&#160;maze_generation.c'],['../maze__generation_8h.html#a33951bb52b6eb401799b7eeec9e18326',1,'list_available_surrounding_cells(cell **maze, cell *cell_group, cell *available_for_opening):&#160;maze_generation.c']]],
+  ['list_5fcells_5fof_5fa_5fgroup',['list_cells_of_a_group',['../maze__generation_8c.html#a9b32d81b8170eca61ba5bf60279bc600',1,'list_cells_of_a_group(cell **maze, int id, cell *cell_group):&#160;maze_generation.c'],['../maze__generation_8h.html#a0d05d42866d2e6638c26b2ed2282f9df',1,'list_cells_of_a_group(cell **maze, int id, cell *group):&#160;maze_generation.c']]],
+  ['list_5fids_5fleft',['list_ids_left',['../maze__generation_8c.html#a926cf435c9d6e6e2f594a1ba9d395232',1,'list_ids_left(cell **maze, int *ids_left):&#160;maze_generation.c'],['../maze__generation_8h.html#a926cf435c9d6e6e2f594a1ba9d395232',1,'list_ids_left(cell **maze, int *ids_left):&#160;maze_generation.c']]],
+  ['load_5fmaze',['load_maze',['../files__manager_8c.html#a0f8a9535e0c47e80bb1bff4caf493bdb',1,'load_maze(char *file_name, int *flag):&#160;files_manager.c'],['../files__manager_8h.html#a0f8a9535e0c47e80bb1bff4caf493bdb',1,'load_maze(char *file_name, int *flag):&#160;files_manager.c']]],
+  ['load_5fscore',['load_score',['../files__manager_8c.html#a3f1c419476669ffde5bab86207925950',1,'load_score(int player_score):&#160;files_manager.c'],['../files__manager_8h.html#ad81836c9aced429ed7f50052c796e18f',1,'load_score(int p_score):&#160;files_manager.c']]]
+];

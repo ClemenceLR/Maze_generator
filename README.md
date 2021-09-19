@@ -1,15 +1,15 @@
 # Maze_generator
-Maze generator in c. 
+Maze generator in c. This program generate a perfect maze with the given odd length and odd height. It also alows you to play and try to get out of this maze.
 
-Launch the programm complition with make in the same directory you put the programm
-Enter ./maze_exe to launch the programm
+Author : Clémence Le Roux
 
-TODO : 
-- Tirage de voisins + aléatoire
-- Menu for the user :
-	- Create Maze
-	- Load Maze
-	- Play
-	- Quit
-- Add items 
-- Add difficulty levels
+#### Lanch the program :
+Launch the program compilation with make in the same directory you put the program
+Enter ./maze_exe to launch the program
+
+#### Program structure :
+This program is divided into 4 folders : 
+-src : the source code of the program
+-include : the libraries used by the program
+-saves : the maze saved by the program
+-documentation : the program documentation in html(functions / structures)
